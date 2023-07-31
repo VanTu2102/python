@@ -1,6 +1,5 @@
 import psycopg2
 
-
 class Postgres:
     connection: any
     cursor: any
@@ -10,7 +9,7 @@ class Postgres:
     host: str
     port: int
 
-    def __init__(self, database_name, user, password, host, port) -> None:
+    def __init__(self, database_name, user, password, host, port, autocommit) -> None:
         self.database_name = database_name
         self.user = user
         self.password = password
@@ -18,16 +17,26 @@ class Postgres:
         self.port = port
         self.connection = psycopg2.connect(
             database=database_name, user=user, password=password, host=host, port=port)
-        self.connection.autocommit = True
+        self.connection.autocommit = autocommit
         self.cursor = self.connection.cursor()
 
-p = Postgres("postgres", 'hoangtu', 'HoangVanTu2102@', 'localhost', 5432)
+    def excute_query_get(self, query):
+        self.cursor.execute(query=query)
+        return self.cursor.fetchall()
+    
+    def excute_query_update(self, query):
+        self.cursor.execute(query=query)
+        return self.connection.commit()
 
-# p.cursor.execute("CREATE TABLE IF NOT EXISTS your_table_name ( column1 integer, column2 bigint);INSERT INTO your_table_name VALUES (1,1092109);")
-p.cursor.execute("DROP TABLE your_table_name;")
-# p.cursor.execute("SELECT * from your_table_name;")
+    def disconnect(self):
+        self.connection.close()
+
+p = Postgres("postgres", 'hoangtu', 'HoangVanTu2102@', 'localhost', 5432, True)
+
+# print(p.excute_query_update("CREATE TABLE IF NOT EXISTS your_table_name ( column1 integer, column2 bigint);INSERT INTO your_table_name VALUES (23,1092109);"))
+# p.cursor.execute("DROP TABLE your_table_name;")
 
 # Fetch all rows from database
-# record = p.cursor.fetchall()
+record = p.excute_query_get("SELECT * from your_table_name;")
 
-# print("Data from Database:- ", record)
+print("Data from Database:- ", record)
