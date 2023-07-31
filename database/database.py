@@ -30,13 +30,3 @@ class Postgres:
 
     def disconnect(self):
         self.connection.close()
-
-p = Postgres("postgres", 'hoangtu', 'HoangVanTu2102@', 'localhost', 5432, True)
-
-# print(p.excute_query_update("CREATE TABLE IF NOT EXISTS your_table_name ( column1 integer, column2 bigint);INSERT INTO your_table_name VALUES (23,1092109);"))
-# p.cursor.execute("DROP TABLE your_table_name;")
-
-# Fetch all rows from database
-record = p.excute_query_get("SELECT * from your_table_name;")
-
-print("Data from Database:- ", record)
