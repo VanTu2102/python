@@ -11,7 +11,7 @@ p = database.Postgres("postgres", 'hoangtu', 'HoangVanTu2102@', 'localhost', 543
 
 heights = []
 weights = []
-items = p.excute_query_get('SELECT * FROM data_height_weight')[0:5000]
+items = p.excute_query_get('SELECT * FROM data_height_weight')[1000:1150]
 for item in items:
     heights.append(float(item[1]))
     weights.append(float(item[2]))
@@ -21,8 +21,8 @@ weights = np.array(weights)
 print(heights.mean())
 print(weights.mean())
 print(StatisticalProbability.Correlation_Coefficient(weights, heights))
-# plt.scatter(weights, heights)
-# plt.xlabel('weights')
-# plt.ylabel('heights')
-# plt.title('Plot')
-# plt.show()
+plt.scatter(weights, heights)
+plt.xlabel('weights')
+plt.ylabel('heights')
+plt.title('Plot')
+plt.show()
