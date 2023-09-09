@@ -22,13 +22,14 @@ class WebAnalyst:
     def __init__(self, dom: WebElement) -> None:
         self.dom = dom
 
-    def getRoot(self):
-        childs = {self.dom: {}}
-        node_vistied = [self.dom]
-        child = childs[self.dom]
-        lst_key_child = [self.dom]
+    def getRoot(self, dom: WebElement):
+        childs = {dom: {}}
+        node_vistied = [dom]
+        child = childs[dom]
+        lst_key_child = [dom]
         while len(self.getAllChild(lst_key_child[0])) > 0:
-            child.update({self.getAllChild(lst_key_child[0])[0]: {}})
+            for lst_elem in self.getAllChild(lst_key_child[0]):
+                child.update({lst_elem: {}})
             lst_key_child = list(child.keys())
             child = child[lst_key_child[0]]
         return childs
@@ -54,7 +55,7 @@ driver.get(url)
 # f.write(driver.page_source)
 for cate in driver.find_elements(By.CLASS_NAME, 'image-carousel__item'):
     root = WebAnalyst(cate)
-    print(root.getRoot(), '\n')
+    print(root.getRoot(root.dom), '\n')
 #     for htmlElem in cate.find_elements(By.XPATH, ".//*"):
 #         print(htmlElem.get_attribute("outerHTML"))
 # f.write(driver.find_element(By.ID, 'main').get_attribute("outerHTML"))
