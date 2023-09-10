@@ -22,20 +22,22 @@ class WebAnalyst:
     def __init__(self, dom: WebElement) -> None:
         self.dom = dom
 
-    def getRoot(self, dom: any, visited = []):
+    def getRoot(self, dom: any, visited=[]):
         if (visited == None):
             visited = []
         if (dom not in visited):
             childs = {dom: {}}
             visited.append(dom)
-            for elem in self.getAllChild(dom):
+            lst_child = self.getAllChild(dom)
+            childs[dom].update({'count': len(lst_child)})
+            for elem in lst_child:
                 childs[dom].update(self.getRoot(elem, visited))
             return childs
         else:
             return {}
 
     def getAllChild(self, dom: WebElement):
-        return dom.find_elements(By.XPATH, ".//*")
+        return dom.find_elements(By.XPATH, "./*")
 
 
 url = 'https://vi.wikipedia.org/wiki/T%E1%BA%A3o_l%E1%BB%A5c'
@@ -55,10 +57,13 @@ driver.get(url)
 for cate in driver.find_elements(By.ID, 'mw-panel-toc-list'):
     root = WebAnalyst(cate)
     dict = root.getRoot(root.dom)
+    print(dict)
     for a in dict:
-        print(1, a.get_attribute('outerHTML'))
+        if(type(a) == WebElement):
+            print(a.get_attribute('outerHTML'), dict[a]['count'])
         for b in dict[a]:
-            print(2, b.get_attribute('outerHTML'))
+            if(type(b) == WebElement):
+                print(b.get_attribute('outerHTML'), dict[a][b]['count'])
 #     for htmlElem in cate.find_elements(By.XPATH, ".//*"):
 #         print(htmlElem.get_attribute("outerHTML"))
 # f.write(driver.find_element(By.ID, 'main').get_attribute("outerHTML"))
