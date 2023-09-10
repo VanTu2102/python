@@ -22,25 +22,25 @@ class WebAnalyst:
     def __init__(self, dom: WebElement) -> None:
         self.dom = dom
 
-    def getRoot(self, dom: WebElement):
-        childs = {dom: {}}
-        node_vistied = [dom]
-        child = childs[dom]
-        lst_key_child = [dom]
-        while len(self.getAllChild(lst_key_child[0])) > 0:
-            for lst_elem in self.getAllChild(lst_key_child[0]):
-                child.update({lst_elem: {}})
-            lst_key_child = list(child.keys())
-            child = child[lst_key_child[0]]
-        return childs
+    def getRoot(self, dom: any, visited = []):
+        if (visited == None):
+            visited = []
+        if (dom not in visited):
+            childs = {dom: {}}
+            visited.append(dom)
+            for elem in self.getAllChild(dom):
+                childs[dom].update(self.getRoot(elem, visited))
+            return childs
+        else:
+            return {}
 
     def getAllChild(self, dom: WebElement):
         return dom.find_elements(By.XPATH, ".//*")
 
 
-url = 'https://shopee.vn'
+url = 'https://vi.wikipedia.org/wiki/T%E1%BA%A3o_l%E1%BB%A5c'
 f = open('./data/' + url.replace('/', '').replace('.', '').replace(':', '') +
-         'shopeeSource.html', 'w', encoding="utf-8")
+         'Source.html', 'w', encoding="utf-8")
 
 options = webdriver.EdgeOptions()
 options.add_experimental_option("detach", True)  # keep browser open
@@ -49,13 +49,16 @@ options.add_experimental_option('excludeSwitches', ['disable-popup-blocking'])
 driver = webdriver.Edge(options=options)
 
 # CrawlWorker = CrawlBySelenium(options, driver)
-# driver.implicitly_wait(1)
+# driver.implicitly_wait(2)
 driver.get(url)
-
 # f.write(driver.page_source)
-for cate in driver.find_elements(By.CLASS_NAME, 'image-carousel__item'):
+for cate in driver.find_elements(By.ID, 'mw-panel-toc-list'):
     root = WebAnalyst(cate)
-    print(root.getRoot(root.dom), '\n')
+    dict = root.getRoot(root.dom)
+    for a in dict:
+        print(1, a.get_attribute('outerHTML'))
+        for b in dict[a]:
+            print(2, b.get_attribute('outerHTML'))
 #     for htmlElem in cate.find_elements(By.XPATH, ".//*"):
 #         print(htmlElem.get_attribute("outerHTML"))
 # f.write(driver.find_element(By.ID, 'main').get_attribute("outerHTML"))
